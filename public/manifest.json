@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Noise Blanket",
+  "description": "An extension to block noise and focus on work.",
+  "version": "0.0.1",
+  "author": "abishek.singh.chauhan@gmail.com",
+  "action": {
+    "default_title": "Noise Blanket",
+    "default_popup": "./src/popup/index.html",
+    "default_icon": {
+      "48": "./icons/icon32.png"
+    }
+  },
+  "background": {
+    "service_worker": "./background.js"
+  },
+  "permissions": ["offscreen", "storage"],
+  "icons": {
+    "16": "./icons/icon16.png",
+    "48": "./icons/icon32.png",
+    "128": "./icons/icon128.png"
+  }
+}

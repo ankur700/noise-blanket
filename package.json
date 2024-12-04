@@ -1,0 +1,35 @@
+{
+  "name": "svelte-extension-template",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "watch": "nodemon --watch src --watch static --exec \"vite build\" -e json,ts,css,html,svelte",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@skeletonlabs/skeleton": "^2.10.3",
+    "@skeletonlabs/tw-plugin": "^0.4.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/chrome": "^0.0.287",
+    "@types/node": "^22.10.1",
+    "@types/webextension-polyfill": "^0.12.1",
+    "autoprefixer": "^10.4.20",
+    "nodemon": "^3.1.7",
+    "postcss": "^8.4.49",
+    "svelte": "^5.2.7",
+    "svelte-check": "^4.1.0",
+    "tailwindcss": "^3.4.15",
+    "tslib": "^2.8.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1",
+    "webextension-polyfill": "^0.12.0"
+  },
+  "dependencies": {
+    "url": "^0.11.4"
+  }
+}
