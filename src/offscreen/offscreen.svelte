@@ -1,9 +1,25 @@
 <script lang="ts">
-  
+  import { audioStore } from "@stores/audioStore";
+  import type { selectedAudioType } from "../lib/types/types";
+
+
   let audioContexts = $state<Map<string, HTMLAudioElement>>(
     new Map<string, HTMLAudioElement>()
   );
 
+  $effect(() => {
+    initializeAudioContexts();
+  });
+
+  function initializeAudioContexts() {
+    if($audioStore.length === 0) return
+    $audioStore.forEach((audio) => {
+      if (!audioContexts.has(audio.src)) {
+        const audioElement = new Audio(audio.src);
+        audioContexts.set(audio.src, audioElement);
+      }
+    })
+  }
 
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.type) {
@@ -21,6 +37,12 @@
         break;
       case "SET_VOLUME_OFFSCREEN":
         setVolume(message.audioUrl, message.volume);
+        break;
+      case "CLEAR_OFFSCREEN":
+        clear();
+        break;
+      case "LOAD_PRESET_OFFSCREEN":
+        loadPreset(message.preset);
         break;
     }
   });
@@ -51,12 +73,12 @@
       audio.pause();
       audio.currentTime = 0;
     });
-    // audioContexts.clear();
   }
 
   function resumeAllAudios() {
     audioContexts.forEach((audio) => {
       audio.play();
+      audio.loop = true;
     });
   }
 
@@ -66,5 +88,17 @@
     if (audio) {
       audio.volume = Math.max(0, Math.min(1, volume / 100));
     }
+  }
+
+  function clear() {
+    stopAllAudios();
+    audioContexts.clear();
+  }
+
+  function loadPreset(preset: selectedAudioType[]) {
+    clear();
+    preset.forEach((audio) => {
+      playAudio(audio.src, audio.volume);
+    });
   }
 </script>

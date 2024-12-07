@@ -16,10 +16,11 @@ function createPersistentStore(key: string, startValue: selectedAudioType[]) {
         console.error('Error saving to storage:', error);
       }
     },
-    update: async (updater: (arg0: selectedAudioType[]) => any) => {
+    update: async (updater: (preset: selectedAudioType[]) => any) => {
       update(currentValue => {
         const newValue = updater(currentValue);
         chrome.storage.local.set({ [key]: newValue }).catch(console.error);
+        set(newValue);
         return newValue;
       });
     },
@@ -49,7 +50,6 @@ function createPersistentStore(key: string, startValue: selectedAudioType[]) {
 
         // Save to Chrome storage
         chrome.storage.local.set({ [key]: newAudios }).catch(console.error);
-        console.log('Updated audios',newAudios);
         return newAudios;
       });
     },
@@ -62,6 +62,14 @@ function createPersistentStore(key: string, startValue: selectedAudioType[]) {
       });
     },
 
+    loadPreset: async (preset: selectedAudioType[]) => {
+      update(currentAudios => {
+        const newAudios = [...preset];
+        set(newAudios);
+        chrome.storage.local.set({ [key]: newAudios }).catch(console.error);
+        return newAudios;
+      });
+    },
 
     // Clear all selected audios
     clear: async () => {

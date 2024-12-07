@@ -1,27 +1,27 @@
 const OFFSCREEN_DOCUMENT_URL = './src/offscreen/index.html';
 
+
+async function checkForDocument() {
+  // Use optional chaining and try-catch for checking document existence
+  let hasDocument = false;
+  try {
+    hasDocument = await chrome.offscreen.hasDocument();
+  } catch (checkError) {
+    console.error('Error checking offscreen document:', checkError);
+  }
+  return hasDocument;
+}
 async function handlePlayAudio(audioUrl, volume) {
   try {
     // Check if offscreen API is available
-    if (!chrome.offscreen || typeof chrome.offscreen.createDocument !== 'function') {
-      console.error('Offscreen API not available');
-      return;
-    }
-
-    // Use optional chaining and try-catch for checking document existence
-    let hasDocument = false;
-    try {
-      hasDocument = await chrome.offscreen.hasDocument();
-    } catch (checkError) {
-      console.log('Error checking offscreen document:', checkError);
-    }
+    const hasDocument = await checkForDocument();
 
     if (!hasDocument) {
       try {
         await chrome.offscreen.createDocument({
           url: OFFSCREEN_DOCUMENT_URL,
-          reasons: ['AUDIO_PLAYBACK'],
-          justification: 'Playing background audio'
+          reasons: ['AUDIO_PLAYBACK', 'LOCAL_STORAGE'],
+          justification: 'Playing background audio and saving data to local storage'
         });
 
       } catch (createError) {
@@ -34,7 +34,7 @@ async function handlePlayAudio(audioUrl, volume) {
     chrome.runtime.sendMessage({
       type: 'PLAY_AUDIO_OFFSCREEN',
       audioUrl: audioUrl,
-      volume: volume
+      volume: volume,
     });
   } catch (error) {
     console.error('Error in handlePlayAudio:', error);
@@ -59,6 +59,12 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         break;
       case 'SET_VOLUME':
         setAudioVolume(message.audioUrl, message.volume);
+      break;
+      case 'CLEAR':
+        clear();
+      break;
+      case 'LOAD_PRESET':
+        loadPreset(message.preset);
       break;
     }
   } catch (error) {
@@ -90,6 +96,7 @@ function stopAllAudios() {
 
 function resumeAllAudios() {
   try {
+
     chrome.runtime.sendMessage({
       type: 'RESUME_ALL_AUDIO_OFFSCREEN'
     });
@@ -106,6 +113,42 @@ function setAudioVolume(audioUrl, volume) {
       volume: volume
     });
   } catch (error) {
-    console.error('Error stopping all audios:', error);
+    console.error('Error setting audio volume:', error);
+  }
+}
+
+function clear() {
+  try {
+    chrome.runtime.sendMessage({
+      type: 'CLEAR_OFFSCREEN'
+    });
+  } catch (error) {
+    console.error('Error clearing all audios:', error);
+  }
+}
+
+async function loadPreset(preset) {
+  try {
+    const hasDocument = await checkForDocument();
+
+    if (!hasDocument) {
+      try {
+        await chrome.offscreen.createDocument({
+          url: OFFSCREEN_DOCUMENT_URL,
+          reasons: ['AUDIO_PLAYBACK', 'LOCAL_STORAGE'],
+          justification: 'Playing background audio and saving data to local storage'
+        });
+
+      } catch (createError) {
+        console.error('Failed to create offscreen document:', createError);
+        return;
+      }
+    }
+    chrome.runtime.sendMessage({
+      type: 'LOAD_PRESET_OFFSCREEN',
+      preset: preset
+    });
+  } catch (error) {
+    console.error('Error loading preset:', error);
   }
 }

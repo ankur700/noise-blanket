@@ -1,9 +1,10 @@
-import { svelte } from '@sveltejs/vite-plugin-svelte'
-import { fileURLToPath } from 'url'
-import { defineConfig } from 'vite'
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { fileURLToPath } from 'url';
+import { defineConfig } from 'vite';
+import { purgeCss } from 'vite-plugin-tailwind-purgecss';
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [svelte(), purgeCss()],
   resolve: {
     alias: {
       '@components': fileURLToPath(
