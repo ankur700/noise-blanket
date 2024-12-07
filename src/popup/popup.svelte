@@ -4,17 +4,19 @@
   import { audioStore } from "@stores/audioStore";
   import { tracks } from "@utils/tracks.js";
   import { onMount } from "svelte";
+  import type { Track } from "../lib/types/types";
   let hasDocument = $state<boolean>(false);
   let hideInactiveSounds = $state<boolean>(false);
   let isPlaying = $state<boolean>(false);
+  let Tracks = $state<Track[] | null>(null);
 
   onMount(() => {
-    audioStore.init();
-  })
+    Tracks = [...tracks];
+  });
 
   $effect(() => {
+    audioStore.init();
     // chrome.runtime.sendMessage({ type: "LOAD_TRACKS" });
-
     const documentCheckInterval = setInterval(checkDocument, 1000); // Check every 1 second
     if (hasDocument) {
       isPlaying = $audioStore.some((audio) => audio.isPlaying);
@@ -32,18 +34,50 @@
       console.error("Error checking offscreen document:", checkError);
     }
   }
+
+  function addTrack() {
+    const title = prompt("Enter a name for the track");
+    const audioSrc = prompt("Provide audio source url");
+
+    const newAudioTrack: Track = {
+      id: (tracks?.length + 1).toString(),
+      src:
+        audioSrc ?? "https://apps.roanapur.de/blanket/603ddcfeb4a790b1579c.ogg",
+      title: title ?? "Custom Audio",
+      icon: "/images/white-noise.svg",
+    };
+    Tracks?.push(newAudioTrack);
+
+    audioStore.playAudio({
+      title: newAudioTrack.title,
+      src: newAudioTrack.src,
+      volume: 50,
+      isPlaying: true,
+    });
+    chrome.runtime.sendMessage({
+      type: "PLAY_AUDIO",
+      audioUrl: newAudioTrack.src,
+      volume: 50,
+    });
+  }
 </script>
 
-<Layout {hasDocument} {isPlaying} bind:hideInactiveSounds={hideInactiveSounds}>
+<Layout {hasDocument} {isPlaying} bind:hideInactiveSounds>
   <div class="grid grid-cols-3 gap-2 p-2">
-    {#each tracks as track}
-      <AudioPlayer {...track} {hideInactiveSounds} />
-    {/each}
-    <div class="card card-hover flex justify-center items-center variant-glass-surface min-h-36" role="group">
-      <section class="card-body ">
+    {#if Tracks}
+      {#each Tracks as track}
+        <AudioPlayer {...track} {hideInactiveSounds} />
+      {/each}
+    {/if}
+    <div
+      class="card card-hover flex justify-center items-center variant-glass-surface min-h-36"
+      role="group"
+    >
+      <section class="card-body">
         <button
           class="btn btn-icon variant-glass-surface"
           aria-label="Add Track"
+          onclick={addTrack}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

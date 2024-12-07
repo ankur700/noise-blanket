@@ -35,7 +35,6 @@
       type: "STOP_AUDIO",
       audioUrl: selectedAudio.src,
       volume: volume,
-      isPlaying: isSelected,
     });
   }
 
@@ -52,7 +51,6 @@
       type: "PLAY_AUDIO",
       audioUrl: selectedAudio.src,
       volume: volume,
-      isPlaying: isSelected,
     });
   }
 

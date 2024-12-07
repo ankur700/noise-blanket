@@ -42,6 +42,8 @@ function createPersistentStore(key: string, startValue: selectedAudioType[]) {
 
         if (!exists) {
           // Add if not exists
+          currentAudios.forEach((a) => a.isPlaying = false);
+          audio.isPlaying = true;
           newAudios = [...currentAudios, audio];
         } else {
           // dont do anything if already exists
