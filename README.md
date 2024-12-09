@@ -1,84 +1,39 @@
-# Svelte + TS + Vite + Tailwindcss + Skeleton UI
+# Noise Blanket
 
-## Svelte extension template
+#### An extension to help improve your focus & increase your productivity by listening to sounds of nature. Or just fall asleep in a noisy environment.
 
-A template for creating browser extensions using:
+This extension is made using [Svelte Extension Template](https://github.com/ankur700/svelte-extension-template)
 
-- [Svelte](https://svelte.dev/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Vite](https://vitejs.dev/)
-- [Skeleton UI](https://www.skeleton.dev/)
 
-|                         Firefox                          |                         Chromium / Edge                         |
+<!-- |                         Firefox                          |                         Chromium / Edge                         |
 | :------------------------------------------------------: | :-------------------------------------------------------------: |
-| ![Screenshot of the extension in Firefox](./firefox.png) | ![Screenshot of the extension in Edge/Chromium](./chrome.png) |
+| ![Screenshot of the extension in Firefox](./firefox.png) | ![Screenshot of the extension in Edge/Chromium](./chrome.png) | -->
+![Full screen extension image](./FullScreen.png)
+![Screenshot of the extension in Edge/Chromium](./chrome.png)
 
-## Structure
 
-It has two entry-points to create `Popup` and `Options` pages:
-
-- `popup/index.html`
-- `options/index.html`
-
-By default, when running the dev server, it will launch the `/src/popup/index.html` page. Go to [this section](#modifying-dev-server-launch-page) to modify the run dev behavior.
+This extension creates offline document to play audio in the background even after the extension popup window is closed. You can also add custom audio by providing audio src url in the prompt when asked.
 
 ## Usage
 
 1. Clone the repository `git clone https://github.com/ankur700/svelte-extension-template.git`
-
 2. Run `pnpm install`
-
 3. Run `pnpm run watch` to start a dev server with HMR or `pnpm run build` to build for production
 
-## Setup
+## Install
+1. Run `pnpm run build` to build for production, extension files will be inside dist folder in the project directory.
+2. open chrome extensions page by typing `chrome://extension` in chrome url bar.
+3. Click the Load Unpacked button on the top left corner.
+4. Select the dist folder from the project directory.
+5. Optionally pin the extension to the toolbar for easier access.
 
-### Creating or removing pages
+## Credits
+Developed by [Ankur Singh](https://github.com/ankur700).
 
-1. Edit the build.input object inside Vite config
+## Inspiration
+This project is highly ispired by [Blanket](https://github.com/rafaelmardojai/blanket) app for linux.
 
-```
-   //vite.config.ts
-   input: {
-       popup: fileURLToPath(
-         new URL('./src/popup/index.html', import.meta.url)
-       ),
-       options: fileURLToPath(
-         new URL('./src/options/index.html', import.meta.url)
-       ),
-     },
-```
-
-2. Insert entry-point/page by inserting `entry-point: path-to-page` pair inside the object.
-   Ex: Adding an about page:
-
-```
-    //vite.config.ts
-    input: {
-        popup: fileURLToPath(
-          new URL('./src/popup/index.html', import.meta.url)
-        ),
-        options: fileURLToPath(
-          new URL('./src/options/index.html', import.meta.url)
-        ),
-        about: fileURLToPath(
-          new URL('./src/about/index.html', import.meta.url)
-        ),
-      },
-```
-
-4. Create a `main.ts`, `index.html` and - optionally - `about.svelte` file in the `src/about` folder for the page similar to how it is done in `src/popup` folder and `src/options` folder.
-
-### Creating or removing path aliases
-
-1. Open `vite.config.ts`
-
-2. Insert a path alias in resolve.alias obj using `'alias': resolve-relative-path-to-alias` key-value pair. Ex: `'$types': fileURLToPath(new URL('./src/lib/types', import.meta.url))`
-
-3. Open `tsconfig.json` and add the alias contents there as well. Ex: for `@types` alias add `"$types/*": ["./src/lib/types/*"],` to the paths obj. This step is not required, it is only to let JS / TS know about the alias to stop showing errors.
-
-Note: @types won't work, as tsconfig.ts uses this alias inside node_modules/@types
-
-### Modifying dev server launch page
-
-Open `vite.config.ts` file and edit `server.open` to the location you want the dev server to open by default.
+## Related Projects
+- [feeltheblow](https://feeltheblow.web.app/) - Web App inspired by Blanket
+- [Soothing Noise Player](https://f-droid.org/en/packages/ie.delilahsthings.soothingloop/) - Android app inspired by Blanket
+- [Blanket Web](https://apps.roanapur.de/blanket/) - Web clone of Blanket
