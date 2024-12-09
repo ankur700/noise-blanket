@@ -3,30 +3,48 @@
   import Layout from "@components/layout.svelte";
   import { audioStore } from "@stores/audioStore";
   import { tracks } from "@utils/tracks.js";
+  import { addTrack, initalizeTracks } from "@utils/utils";
   import { onMount } from "svelte";
   import type { Track } from "../lib/types/types";
   let hasDocument = $state<boolean>(false);
   let hideInactiveSounds = $state<boolean>(false);
-  let isPlaying = $state<boolean>(false);
-  let Tracks = $state<Track[] | null>(null);
+  let isPlaying = $derived<boolean>(hasDocument && $audioStore.some((audio) => audio.isPlaying));
+  let Tracks = $derived(setTracks());
+  let isSelected = $derived((track: Track) =>
+    $audioStore.some((audio) => audio.src === track.src)
+  );
+  let tracksFromStorage = $state<Track[] | null>(null);
+  let isCustom = $derived((track: Track) =>
+    tracksFromStorage?.some((t) => t.src === track.src)
+  );
 
   onMount(() => {
-    Tracks = [...tracks];
-  });
+    audioStore.init();
+    checkDocument();
+  })
+
 
   $effect(() => {
-    audioStore.init();
-    // chrome.runtime.sendMessage({ type: "LOAD_TRACKS" });
+    getTracksFromStorage();
     const documentCheckInterval = setInterval(checkDocument, 1000); // Check every 1 second
-    if (hasDocument) {
-      isPlaying = $audioStore.some((audio) => audio.isPlaying);
-    }
 
     return () => {
       clearInterval(documentCheckInterval);
     };
   });
 
+  function setTracks() {
+    if (!tracksFromStorage) {
+      return tracks;
+    } else {
+      return [...tracks, ...tracksFromStorage];
+    }
+  }
+
+  async function getTracksFromStorage() {
+    tracksFromStorage = await initalizeTracks();
+
+  }
   async function checkDocument() {
     try {
       hasDocument = await chrome.offscreen.hasDocument();
@@ -34,39 +52,18 @@
       console.error("Error checking offscreen document:", checkError);
     }
   }
-
-  function addTrack() {
-    const title = prompt("Enter a name for the track");
-    const audioSrc = prompt("Provide audio source url");
-
-    const newAudioTrack: Track = {
-      id: (tracks?.length + 1).toString(),
-      src:
-        audioSrc ?? "https://apps.roanapur.de/blanket/603ddcfeb4a790b1579c.ogg",
-      title: title ?? "Custom Audio",
-      icon: "/images/white-noise.svg",
-    };
-    Tracks?.push(newAudioTrack);
-
-    audioStore.playAudio({
-      title: newAudioTrack.title,
-      src: newAudioTrack.src,
-      volume: 50,
-      isPlaying: true,
-    });
-    chrome.runtime.sendMessage({
-      type: "PLAY_AUDIO",
-      audioUrl: newAudioTrack.src,
-      volume: 50,
-    });
-  }
 </script>
 
 <Layout {hasDocument} {isPlaying} bind:hideInactiveSounds>
   <div class="grid grid-cols-3 gap-2 p-2">
     {#if Tracks}
       {#each Tracks as track}
-        <AudioPlayer {...track} {hideInactiveSounds} />
+        <AudioPlayer
+          {...track}
+          {hideInactiveSounds}
+          isCustom={isCustom(track)}
+          isSelected={isSelected(track)}
+        />
       {/each}
     {/if}
     <div
@@ -77,7 +74,7 @@
         <button
           class="btn btn-icon variant-glass-surface"
           aria-label="Add Track"
-          onclick={addTrack}
+          onclick={() => addTrack(Tracks ?? [])}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
