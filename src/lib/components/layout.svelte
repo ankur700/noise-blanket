@@ -226,6 +226,7 @@
         aria-label="Clear"
         title="Clear All"
         onclick={clear}
+        disabled={$audioStore.length === 0}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

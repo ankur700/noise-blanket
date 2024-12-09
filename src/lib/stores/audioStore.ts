@@ -27,7 +27,9 @@ function createPersistentStore(key: string, startValue: selectedAudioType[]) {
     init: async () => {
       try {
         const stored = await chrome.storage.local.get(key);
-        if (stored[key] !== undefined) {
+        const hasDocument = await chrome.offscreen.hasDocument();
+
+        if (stored[key] !== undefined && hasDocument) {
           set(stored[key]);
         }
       } catch (error) {

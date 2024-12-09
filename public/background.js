@@ -1,6 +1,17 @@
 const OFFSCREEN_DOCUMENT_URL = './src/offscreen/index.html';
 
 
+
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    title: "Remove Audio",
+    type: "normal",
+    contexts: ["link"],
+    id: "removeAudio",
+  });
+});
+
 async function checkForDocument() {
   // Use optional chaining and try-catch for checking document existence
   let hasDocument = false;
