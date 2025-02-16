@@ -1,15 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 import { skeleton } from '@skeletonlabs/tw-plugin';
+import forms from '@tailwindcss/forms';
 import { join } from 'path';
 import type { Config } from 'tailwindcss';
 
 const config = {
-  theme: {
-    extend: {},
-  },
-  darkMode: 'selector',
+	theme: {
+		extend: {},
+	},
+	darkMode: 'selector',
 	content: [
-    "./index.html",'./src/**/*.{svelte,js,ts}',
+		"./index.html", './src/**/*.{svelte,js,ts}',
 		'./src/**/*.{html,js,svelte,ts}',
 		join(require.resolve(
 			'@skeletonlabs/skeleton'),
@@ -19,9 +20,10 @@ const config = {
 	plugins: [
 		skeleton({
 			themes: {
-				preset: [ {name: "skeleton", enhancements: true} ]
+				preset: [{ name: "skeleton", enhancements: true }]
 			}
-		})
+		}),
+		forms
 	]
 } satisfies Config;
 

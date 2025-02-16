@@ -1,16 +1,4 @@
-const OFFSCREEN_DOCUMENT_URL = './src/offscreen/index.html';
-
-
-
-
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.contextMenus.create({
-    title: "Remove Audio",
-    type: "normal",
-    contexts: ["link"],
-    id: "removeAudio",
-  });
-});
+const OFFSCREEN_DOCUMENT_URL = "./src/offscreen/index.html";
 
 async function checkForDocument() {
   // Use optional chaining and try-catch for checking document existence
@@ -18,7 +6,7 @@ async function checkForDocument() {
   try {
     hasDocument = await chrome.offscreen.hasDocument();
   } catch (checkError) {
-    console.error('Error checking offscreen document:', checkError);
+    console.error("Error checking offscreen document:", checkError);
   }
   return hasDocument;
 }
@@ -31,24 +19,24 @@ async function handlePlayAudio(audioUrl, volume) {
       try {
         await chrome.offscreen.createDocument({
           url: OFFSCREEN_DOCUMENT_URL,
-          reasons: ['AUDIO_PLAYBACK', 'LOCAL_STORAGE'],
-          justification: 'Playing background audio and saving data to local storage'
+          reasons: ["AUDIO_PLAYBACK", "LOCAL_STORAGE"],
+          justification:
+            "Playing background audio and saving data to local storage",
         });
-
       } catch (createError) {
-        console.error('Failed to create offscreen document:', createError);
+        console.error("Failed to create offscreen document:", createError);
         return;
       }
     }
 
     // Send play message to offscreen document
     chrome.runtime.sendMessage({
-      type: 'PLAY_AUDIO_OFFSCREEN',
+      type: "PLAY_AUDIO_OFFSCREEN",
       audioUrl: audioUrl,
       volume: volume,
     });
   } catch (error) {
-    console.error('Error in handlePlayAudio:', error);
+    console.error("Error in handlePlayAudio:", error);
   }
 }
 
@@ -56,30 +44,30 @@ async function handlePlayAudio(audioUrl, volume) {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   try {
     switch (message.type) {
-      case 'PLAY_AUDIO':
+      case "PLAY_AUDIO":
         handlePlayAudio(message.audioUrl, message.volume);
         break;
-      case 'STOP_AUDIO':
+      case "STOP_AUDIO":
         handleStopAudio(message.audioUrl);
         break;
-      case 'STOP_ALL_AUDIO':
+      case "STOP_ALL_AUDIO":
         stopAllAudios();
         break;
-      case 'RESUME_ALL_AUDIO':
+      case "RESUME_ALL_AUDIO":
         resumeAllAudios();
         break;
-      case 'SET_VOLUME':
+      case "SET_VOLUME":
         setAudioVolume(message.audioUrl, message.volume);
-      break;
-      case 'CLEAR':
+        break;
+      case "CLEAR":
         clear();
-      break;
-      case 'LOAD_PRESET':
+        break;
+      case "LOAD_PRESET":
         loadPreset(message.preset);
-      break;
+        break;
     }
   } catch (error) {
-    console.error('Error in message listener:', error);
+    console.error("Error in message listener:", error);
   }
 });
 
@@ -87,54 +75,53 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function handleStopAudio(audioUrl) {
   try {
     chrome.runtime.sendMessage({
-      type: 'STOP_AUDIO_OFFSCREEN',
-      audioUrl: audioUrl
+      type: "STOP_AUDIO_OFFSCREEN",
+      audioUrl: audioUrl,
     });
   } catch (error) {
-    console.error('Error stopping audio:', error);
+    console.error("Error stopping audio:", error);
   }
 }
 
 function stopAllAudios() {
   try {
     chrome.runtime.sendMessage({
-      type: 'STOP_ALL_AUDIO_OFFSCREEN'
+      type: "STOP_ALL_AUDIO_OFFSCREEN",
     });
   } catch (error) {
-    console.error('Error stopping all audios:', error);
+    console.error("Error stopping all audios:", error);
   }
 }
 
 function resumeAllAudios() {
   try {
-
     chrome.runtime.sendMessage({
-      type: 'RESUME_ALL_AUDIO_OFFSCREEN'
+      type: "RESUME_ALL_AUDIO_OFFSCREEN",
     });
   } catch (error) {
-    console.error('Error resuming all audios:', error);
+    console.error("Error resuming all audios:", error);
   }
 }
 
 function setAudioVolume(audioUrl, volume) {
   try {
     chrome.runtime.sendMessage({
-      type: 'SET_VOLUME_OFFSCREEN',
+      type: "SET_VOLUME_OFFSCREEN",
       audioUrl: audioUrl,
-      volume: volume
+      volume: volume,
     });
   } catch (error) {
-    console.error('Error setting audio volume:', error);
+    console.error("Error setting audio volume:", error);
   }
 }
 
 function clear() {
   try {
     chrome.runtime.sendMessage({
-      type: 'CLEAR_OFFSCREEN'
+      type: "CLEAR_OFFSCREEN",
     });
   } catch (error) {
-    console.error('Error clearing all audios:', error);
+    console.error("Error clearing all audios:", error);
   }
 }
 
@@ -144,22 +131,22 @@ async function loadPreset(preset) {
 
     if (!hasDocument) {
       try {
-        await chrome.offscreen.createDocument({
+        chrome.offscreen.createDocument({
           url: OFFSCREEN_DOCUMENT_URL,
-          reasons: ['AUDIO_PLAYBACK', 'LOCAL_STORAGE'],
-          justification: 'Playing background audio and saving data to local storage'
+          reasons: ["AUDIO_PLAYBACK", "LOCAL_STORAGE"],
+          justification:
+            "Playing background audio and saving data to local storage",
         });
-
       } catch (createError) {
-        console.error('Failed to create offscreen document:', createError);
+        console.error("Failed to create offscreen document:", createError);
         return;
       }
     }
     chrome.runtime.sendMessage({
-      type: 'LOAD_PRESET_OFFSCREEN',
-      preset: preset
+      type: "LOAD_PRESET_OFFSCREEN",
+      preset: preset,
     });
   } catch (error) {
-    console.error('Error loading preset:', error);
+    console.error("Error loading preset:", error);
   }
 }

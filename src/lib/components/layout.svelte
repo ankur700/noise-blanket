@@ -12,9 +12,6 @@
     hideInactiveSounds = $bindable<boolean>(false),
   } = $props();
 
-  const DefaultPreset = {
-    default: [],
-  };
   let selectedPreset = $state<string>("default");
   let savedPresets = $state<Preset[] | null>(null);
   let open = $state<boolean>(false);
@@ -40,10 +37,7 @@
 
   async function loadPresetsFromStorage() {
     try {
-      const savedPresetsFromStorage = await StorageManager.getAllPresets();
-      if (savedPresetsFromStorage.length > 0) {
-        savedPresets = [DefaultPreset, ...savedPresetsFromStorage];
-      }
+      savedPresets = await StorageManager.getAllPresets();
     } catch (error) {
       console.error("Error loading presets from storage", error);
     }
@@ -171,7 +165,9 @@
                 hideInactiveSounds = !hideInactiveSounds;
               }}
             >
-              {hideInactiveSounds ? "Show Inactive Sounds" : "Hide Inactive Sounds"}
+              {hideInactiveSounds
+                ? "Show Inactive Sounds"
+                : "Hide Inactive Sounds"}
             </button>
           </li>
         </ul>
@@ -254,12 +250,17 @@
         class="select max-w-md"
         bind:value={selectedPreset}
         onchange={loadPreset}
+        placeholder="Select Preset"
       >
-        {#each savedPresets as preset}
-          <option value={Object.keys(preset)[0]}
-            >{Object.keys(preset)[0]}</option
-          >
-        {/each}
+        {#if savedPresets.length > 0}
+          {#each savedPresets as preset}
+            <option value={Object.keys(preset)[0]}
+              >{Object.keys(preset)[0]}</option
+            >
+          {/each}
+        {:else}
+          <option value="default">Default</option>
+        {/if}
       </select>
     {/if}
 
