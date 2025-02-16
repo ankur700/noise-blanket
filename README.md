@@ -8,8 +8,10 @@ This extension is made using [Svelte Extension Template](https://github.com/anku
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Demo](#demo)
 - [Contributing](#contributing)
+- [Credits](#credots)# Noise Blanket
+- [Inspiration](#inspiration)
+- [Related Projects](#related-projects)
 - [License](#license)
 
 ## Introduction
@@ -88,7 +90,7 @@ We welcome contributions to improve Noise Blanket. To contribute, follow these s
 Developed by [Ankur Singh](https://github.com/ankur700).
 
 ## Inspiration
-This project is highly ispired by [Blanket](https://github.com/rafaelmardojai/blanket) app for linux.
+This project is highly inspired by [Blanket](https://github.com/rafaelmardojai/blanket) app for linux.
 
 ## Related Projects
 - [feeltheblow](https://feeltheblow.web.app/) - Web App inspired by Blanket
